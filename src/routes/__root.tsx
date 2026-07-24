@@ -126,7 +126,7 @@ export const Route =
         },
         {
           title:
-            "Manual Stock — A maior biblioteca de manuais técnicos para motocicletas do Brasil",
+            "Casa dos brutos — A maior biblioteca de manuais técnicos do Brasil",
         },
         {
           name: "description",
@@ -135,7 +135,7 @@ export const Route =
         },
         {
           property: "og:title",
-          content: "Manual Stock",
+          content: "Casa dos brutos",
         },
         {
           property:

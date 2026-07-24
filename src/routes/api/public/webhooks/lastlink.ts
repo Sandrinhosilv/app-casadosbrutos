@@ -304,7 +304,7 @@ export const Route = createFileRoute(
             payload?.data?.product?.name,
             payload?.product?.name,
           ]) ??
-          "Manual Stock Pro";
+          "Casa dos brutos";
 
         const offerId =
           getFirstString([

@@ -37,7 +37,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       {
-        title: "Entrar — Manual Stock",
+        title: "Casa dos brutos",
       },
       {
         name: "robots",
@@ -442,7 +442,7 @@ function AuthPage() {
     signup: {
       title: "Criar conta",
       subtitle:
-        "Comece a usar o Manual Stock em segundos.",
+        "Comece a usar o Casa dos brutos em segundos.",
     },
 
     magic: {
@@ -480,13 +480,7 @@ function AuthPage() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 py-10 sm:px-6 sm:py-16">
-        <Link
-          to="/"
-          className="mb-7 inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-xs text-muted-foreground backdrop-blur-sm transition hover:border-primary/40 hover:text-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Voltar
-        </Link>
+        
 
         <section className="rounded-[32px] border border-border/80 bg-card/80 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl sm:p-8">
           <BrandLogo
@@ -631,7 +625,7 @@ function AuthPage() {
                       }
                       className="font-medium text-primary transition hover:opacity-80 disabled:opacity-50"
                     >
-                      Criar conta
+                      Registrar-se
                     </button>
                   </>
                 )}
@@ -682,7 +676,7 @@ function AuthPage() {
           Ao continuar, você concorda
           com os termos de uso e a
           política de privacidade do
-          Manual Stock.
+          Casa dos brutos.
         </p>
       </div>
     </main>
@@ -701,7 +695,7 @@ function BrandLogo({
       {!failed ? (
         <img
           src={logoManualStock}
-          alt="Manual Stock"
+          alt="Casa dos brutos"
           className="h-24 w-auto object-contain"
           onError={onError}
         />

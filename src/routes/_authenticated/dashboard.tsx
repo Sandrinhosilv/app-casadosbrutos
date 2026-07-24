@@ -25,7 +25,7 @@ export const Route = createFileRoute(
   head: () => ({
     meta: [
       {
-        title: "Dashboard — Manual Stock",
+        title: "Dashboard — Casa dos brutos",
       },
     ],
   }),
@@ -177,7 +177,7 @@ function Dashboard() {
         >
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">
-              Ative o Manual Stock Pro
+              Ative o Casa dos brutos
             </p>
 
             <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">
@@ -541,7 +541,7 @@ function getPlanDisplayName(
       return "Período de teste";
 
     case "active":
-      return "Manual Stock Pro";
+      return "Casa dos brutos Pro";
 
     case "past_due":
       return "Pagamento pendente";
