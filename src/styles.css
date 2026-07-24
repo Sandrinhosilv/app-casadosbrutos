@@ -1,0 +1,328 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Manual Stock — design system
+ * Preto profundo, azul vibrante Apple-like, cards escuros e glow discreto.
+ * Só existem 3 cores: preto, branco, azul (#0A84FF).
+ */
+
+@theme inline {
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-3xl: 32px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans:
+    "Inter Tight", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-display:
+    "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 20px;
+
+  /* Base */
+  --background: oklch(0.09 0 0);              /* #050505 */
+  --foreground: oklch(0.985 0 0);             /* branco */
+  --card: oklch(0.135 0 0);                   /* #101010 */
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  /* Azul Apple #0A84FF */
+  --primary: oklch(0.66 0.2 254);
+  --primary-foreground: oklch(1 0 0);
+  --primary-soft: oklch(0.66 0.2 254 / 0.15);
+
+  --secondary: oklch(0.17 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.16 0 0);
+  --muted-foreground: oklch(0.66 0 0);
+  --accent: oklch(0.66 0.2 254 / 0.12);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(1 0 0 / 0.08);
+  --input: oklch(1 0 0 / 0.08);
+  --ring: oklch(0.66 0.2 254);
+
+  --sidebar: oklch(0.075 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.66 0.2 254);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.14 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 0.06);
+  --sidebar-ring: oklch(0.66 0.2 254);
+
+  /* Efeitos */
+  --shadow-glow: 0 0 40px -10px oklch(0.66 0.2 254 / 0.55);
+  --shadow-glow-soft: 0 0 60px -20px oklch(0.66 0.2 254 / 0.35);
+  --gradient-hero:
+    radial-gradient(1000px 500px at 50% -10%, oklch(0.66 0.2 254 / 0.28), transparent 60%),
+    radial-gradient(700px 400px at 80% 20%, oklch(0.66 0.2 254 / 0.12), transparent 65%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.7 0.2 254), oklch(0.58 0.2 258));
+  --grid-bg:
+    linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.04) 1px, transparent 1px);
+}
+
+.dark {
+  /* Manual Stock é dark-first — .dark = mesmo tema */
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.135 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.66 0.2 254);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.17 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.16 0 0);
+  --muted-foreground: oklch(0.66 0 0);
+  --accent: oklch(0.66 0.2 254 / 0.12);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 0.08);
+  --input: oklch(1 0 0 / 0.08);
+  --ring: oklch(0.66 0.2 254);
+  --sidebar: oklch(0.075 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.66 0.2 254);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.14 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 0.06);
+  --sidebar-ring: oklch(0.66 0.2 254);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: oklch(0.66 0.2 254 / 0.35);
+    color: oklch(1 0 0);
+  }
+
+  /* Scrollbar minimalista */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(1 0 0 / 0.08);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(1 0 0 / 0.15);
+  }
+}
+
+@utility bg-hero {
+  background-image: var(--gradient-hero);
+}
+
+@utility bg-grid {
+  background-image: var(--grid-bg);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+
+@utility glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility glow-soft {
+  box-shadow: var(--shadow-glow-soft);
+}
+
+@utility surface {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+@utility surface-hover {
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 300ms ease,
+    transform 200ms ease;
+}
+@utility surface-hover-on {
+  border-color: oklch(0.66 0.2 254 / 0.4);
+  background-color: oklch(0.155 0 0);
+  box-shadow: var(--shadow-glow-soft);
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-33.333333%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-33.333333%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 40s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 40s linear infinite;
+}
+
+@media (max-width: 640px) {
+  .animate-marquee-left {
+    animation-duration: 28s;
+  }
+
+  .animate-marquee-right {
+    animation-duration: 28s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* =========================================================
+   CARROSSEL DE PROVAS SOCIAIS
+   ========================================================= */
+
+@keyframes feedback-scroll-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes feedback-scroll-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-feedback-left {
+  animation: feedback-scroll-left 55s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.animate-feedback-right {
+  animation: feedback-scroll-right 55s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Pausa ao passar o mouse no desktop */
+.group:hover .animate-feedback-left,
+.group:hover .animate-feedback-right {
+  animation-play-state: paused;
+}
+
+/* Mobile: movimento um pouco mais rápido */
+@media (max-width: 640px) {
+  .animate-feedback-left,
+  .animate-feedback-right {
+    animation-duration: 38s;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .animate-feedback-left,
+  .animate-feedback-right {
+    animation-duration: 46s;
+  }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .animate-feedback-left,
+  .animate-feedback-right {
+    animation: none;
+    transform: none;
+  }
+}
