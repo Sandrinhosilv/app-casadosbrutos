@@ -1,18 +1,30 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  createFileRoute,
+  useNavigate,
+} from "@tanstack/react-router";
+import {
+  useEffect,
+  useState,
+} from "react";
+import {
+  AnimatePresence,
+  motion,
+} from "framer-motion";
+import {
+  useServerFn,
+} from "@tanstack/react-start";
 import { z } from "zod";
 import {
-  ArrowLeft,
   ImageOff,
   Loader2,
-  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import logoManualStock from "@/assets/logo.png";
+import logoCasadosbrutos from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+import {
+  notifyNewUserServer,
+} from "@/lib/new-user-notification.functions";
 
 type Mode =
   | "login"
@@ -53,8 +65,12 @@ function AuthPage() {
   const { mode: initialMode } =
     Route.useSearch();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
+
+  const notifyNewUser =
+    useServerFn(
+      notifyNewUserServer,
+    );
 
   const [mode, setMode] =
     useState<Mode>(
@@ -106,9 +122,7 @@ function AuthPage() {
       );
     }
 
-    if (
-      roleData?.role === "admin"
-    ) {
+    if (roleData?.role === "admin") {
       await navigate({
         to: "/admin",
         replace: true,
@@ -134,7 +148,8 @@ function AuthPage() {
           },
           error,
         } =
-          await supabase.auth.getSession();
+          await supabase.auth
+            .getSession();
 
         if (error) {
           throw error;
@@ -180,6 +195,9 @@ function AuthPage() {
 
     const normalizedEmail =
       email.trim().toLowerCase();
+
+    const normalizedName =
+      name.trim();
 
     if (!normalizedEmail) {
       toast.error(
@@ -227,7 +245,7 @@ function AuthPage() {
       }
 
       if (mode === "signup") {
-        if (!name.trim()) {
+        if (!normalizedName) {
           throw new Error(
             "Informe seu nome.",
           );
@@ -237,25 +255,112 @@ function AuthPage() {
           data: signupData,
           error,
         } =
-          await supabase.auth.signUp({
-            email:
-              normalizedEmail,
+          await supabase.auth
+            .signUp({
+              email:
+                normalizedEmail,
 
-            password,
+              password,
 
-            options: {
-              emailRedirectTo:
-                `${window.location.origin}/auth`,
+              options: {
+                emailRedirectTo:
+                  `${window.location.origin}/auth`,
 
-              data: {
-                full_name:
-                  name.trim(),
+                data: {
+                  full_name:
+                    normalizedName,
+
+                  name:
+                    normalizedName,
+                },
               },
-            },
-          });
+            });
 
         if (error) {
           throw error;
+        }
+
+        if (!signupData.user) {
+          throw new Error(
+            "A conta não foi criada corretamente.",
+          );
+        }
+
+        console.log(
+          "[Cadastro] Conta criada no Supabase:",
+          {
+            id:
+              signupData.user.id,
+
+            email:
+              signupData.user.email,
+
+            hasSession:
+              Boolean(
+                signupData.session,
+              ),
+          },
+        );
+
+        console.log(
+          "[Cadastro] Iniciando notificação do Telegram...",
+        );
+
+        try {
+          const telegramResult =
+            await notifyNewUser({
+              data: {
+                userId:
+                  signupData.user.id,
+
+                email:
+                  normalizedEmail,
+
+                fullName:
+                  normalizedName,
+              },
+            });
+
+          console.log(
+            "[Cadastro] Resposta da Server Function:",
+            telegramResult,
+          );
+
+          if (!telegramResult.ok) {
+            console.error(
+              "[Cadastro] Telegram recusou a notificação:",
+              telegramResult,
+            );
+
+            toast.warning(
+              `Conta criada, mas a notificação falhou: ${
+                telegramResult.error ??
+                "erro desconhecido"
+              }`,
+            );
+          } else {
+            console.log(
+              "[Cadastro] Telegram enviado com sucesso:",
+              {
+                status:
+                  telegramResult.status,
+
+                messageId:
+                  telegramResult.messageId,
+              },
+            );
+          }
+        } catch (
+          notificationError
+        ) {
+          console.error(
+            "[Cadastro] A Server Function não executou:",
+            notificationError,
+          );
+
+          toast.warning(
+            "Conta criada, mas não foi possível executar a notificação.",
+          );
         }
 
         if (
@@ -277,6 +382,8 @@ function AuthPage() {
         );
 
         setPassword("");
+        setName("");
+
         changeMode("login");
 
         return;
@@ -341,70 +448,6 @@ function AuthPage() {
     }
   }
 
-  async function signInGoogle() {
-    if (loading) {
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const result =
-        await lovable.auth
-          .signInWithOAuth(
-            "google",
-            {
-              redirect_uri:
-                `${window.location.origin}/auth`,
-            },
-          );
-
-      if (result.error) {
-        throw result.error;
-      }
-
-      if (result.redirected) {
-        return;
-      }
-
-      const {
-        data: {
-          session,
-        },
-        error,
-      } =
-        await supabase.auth.getSession();
-
-      if (error) {
-        throw error;
-      }
-
-      if (!session?.user) {
-        throw new Error(
-          "A sessão do Google ainda não está disponível.",
-        );
-      }
-
-      await redirectByRole(
-        session.user.id,
-      );
-    } catch (error) {
-      console.error(
-        "[Auth] Falha no login com Google:",
-        error,
-      );
-
-      toast.error(
-        getAuthErrorMessage(
-          error,
-          "Não foi possível entrar com o Google.",
-        ),
-      );
-
-      setLoading(false);
-    }
-  }
-
   function changeMode(
     nextMode: Mode,
   ) {
@@ -416,47 +459,17 @@ function AuthPage() {
 
     void navigate({
       to: "/auth",
+
       search: {
         mode:
           nextMode === "login"
             ? undefined
             : nextMode,
       },
+
       replace: true,
     });
   }
-
-  const titles: Record<
-    Mode,
-    {
-      title: string;
-      subtitle: string;
-    }
-  > = {
-    login: {
-      title: "Entrar",
-      subtitle:
-        "Acesse a biblioteca completa.",
-    },
-
-    signup: {
-      title: "Criar conta",
-      subtitle:
-        "Comece a usar o Casa dos brutos em segundos.",
-    },
-
-    magic: {
-      title: "Link mágico",
-      subtitle:
-        "Enviaremos um link de acesso para seu e-mail.",
-    },
-
-    forgot: {
-      title: "Recuperar senha",
-      subtitle:
-        "Enviaremos instruções para seu e-mail.",
-    },
-  };
 
   if (checkingSession) {
     return (
@@ -475,13 +488,12 @@ function AuthPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-hero opacity-70" />
+
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
 
       <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 py-10 sm:px-6 sm:py-16">
-        
-
         <section className="rounded-[32px] border border-border/80 bg-card/80 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl sm:p-8">
           <BrandLogo
             failed={logoFailed}
@@ -490,9 +502,7 @@ function AuthPage() {
             }
           />
 
-          <AnimatePresence
-            mode="wait"
-          >
+          <AnimatePresence mode="wait">
             <motion.div
               key={mode}
               initial={{
@@ -511,8 +521,6 @@ function AuthPage() {
                 duration: 0.22,
               }}
             >
-              
-
               <form
                 onSubmit={onSubmit}
                 className="mt-7 space-y-4"
@@ -592,8 +600,6 @@ function AuthPage() {
                 </button>
               </form>
 
-              
-
               <div className="mt-7 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                 {mode ===
                   "login" && (
@@ -605,9 +611,7 @@ function AuthPage() {
                           "forgot",
                         )
                       }
-                      disabled={
-                        loading
-                      }
+                      disabled={loading}
                       className="transition hover:text-primary disabled:opacity-50"
                     >
                       Esqueci minha senha
@@ -620,9 +624,7 @@ function AuthPage() {
                           "signup",
                         )
                       }
-                      disabled={
-                        loading
-                      }
+                      disabled={loading}
                       className="font-medium text-primary transition hover:opacity-80 disabled:opacity-50"
                     >
                       Registrar-se
@@ -639,17 +641,14 @@ function AuthPage() {
                         "login",
                       )
                     }
-                    disabled={
-                      loading
-                    }
+                    disabled={loading}
                     className="font-medium text-primary transition hover:opacity-80 disabled:opacity-50"
                   >
                     Já tem conta? Entrar
                   </button>
                 )}
 
-                {(mode ===
-                  "magic" ||
+                {(mode === "magic" ||
                   mode ===
                     "forgot") && (
                   <button
@@ -659,9 +658,7 @@ function AuthPage() {
                         "login",
                       )
                     }
-                    disabled={
-                      loading
-                    }
+                    disabled={loading}
                     className="font-medium text-primary transition hover:opacity-80 disabled:opacity-50"
                   >
                     Voltar para o login
@@ -694,7 +691,7 @@ function BrandLogo({
     <div className="mb-8 flex justify-center">
       {!failed ? (
         <img
-          src={logoManualStock}
+          src={logoCasadosbrutos}
           alt="Casa dos brutos"
           className="h-24 w-auto object-contain"
           onError={onError}
@@ -738,37 +735,6 @@ function Field({
         {...rest}
       />
     </label>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        fill="#4285F4"
-        d="M21.6 12.23c0-.72-.06-1.25-.2-1.8H12v3.48h5.52a4.71 4.71 0 0 1-2.05 3.04v2.5h3.32c1.94-1.78 2.81-4.4 2.81-7.22Z"
-      />
-
-      <path
-        fill="#34A853"
-        d="M12 22c2.7 0 4.96-.9 6.61-2.44l-3.32-2.5c-.9.6-2.05.96-3.29.96-2.6 0-4.8-1.75-5.6-4.12H2.98v2.58A10 10 0 0 0 12 22Z"
-      />
-
-      <path
-        fill="#FBBC05"
-        d="M6.4 13.9A6.07 6.07 0 0 1 6.08 12c0-.66.11-1.3.32-1.9V7.52H2.98A10 10 0 0 0 2 12c0 1.61.38 3.14.98 4.48L6.4 13.9Z"
-      />
-
-      <path
-        fill="#EA4335"
-        d="M12 5.98c1.47 0 2.78.5 3.82 1.49l2.87-2.87C16.95 2.98 14.7 2 12 2a10 10 0 0 0-9.02 5.52L6.4 10.1C7.2 7.73 9.4 5.98 12 5.98Z"
-      />
-    </svg>
   );
 }
 
@@ -819,6 +785,9 @@ function getAuthErrorMessage(
   if (
     message.includes(
       "email rate limit exceeded",
+    ) ||
+    message.includes(
+      "over_email_send_rate_limit",
     )
   ) {
     return "Muitos e-mails foram enviados. Aguarde alguns minutos e tente novamente.";
